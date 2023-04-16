@@ -1,0 +1,95 @@
+# H3
+ 
+ Harjoituksen tarkoituksena on harjoitella GIT-versionhallinta työkalun käyttöä. Tein harjoituksen omalla pöytäkoneellani 16.4.2023.
+
+ 
+ 
+### Laitteisto
+ 
+* Käyttöjärjestelmä	Microsoft Windows 10 Enterprise LTSC 64 bit
+* Prosessori i5-6600
+* RAM 16 GB
+
+
+
+
+
+## Varasto GitHubiin (22:23)
+
+Luodaan uusi varasto GitHubiin.
+
+Aloitin kirjautumalla sisään GitHubiin käyttäjänä ja siirryin luomaan uuden varaston kohdasta 'New repository'.
+
+
+
+
+Automatisaatio (11:55)
+
+Automatisoidaan aiemmin tehty OpenSSH-palvelimen asennus.
+
+Aloitin luomalla uuden .sls-tiedoston komennolla:
+
+    $ sudo mkdir -p /srv/salt/
+    
+ja sen sisään seuraavanlaisen tiedoston komennolla:
+
+    $ sudo micro sshd.sls
+
+    openssh-server:
+     pkg.installed
+    /etc/ssh/sshd_config:
+     file.managed:
+    - source: salt://sshd_config
+    sshd:
+    service.running:
+    - watch:
+     - file: /etc/ssh/sshd_config
+
+Seuraavaksi kopioin aikaisemmin luodun sshd-konfiguraatiotiedoston sijaintiin /srv/salt/ komennolla
+
+    $ sudo cp sshd_config /srv/salt
+
+    
+ Seuraavaksi puskin uuden tilan orjille komennolla:
+ 
+    $ sudo salt '*' state.apply sshd 
+    
+![image](https://user-images.githubusercontent.com/106889187/230877665-517bf4ce-8ba0-4f35-bcb8-5bf519ad7a51.png)
+    
+    
+![image](https://user-images.githubusercontent.com/106889187/230877722-3c80f4e2-3e9d-4ffc-a074-d33d7168ef6e.png)
+
+
+Tarkistin orja-koneiden IP-osoitteet komennolla:
+
+    $ sudo salt '*' cmd.run 'hostname -I'
+    
+![image](https://user-images.githubusercontent.com/106889187/230878124-d764b789-f7f2-40f3-ae8e-a9747144db91.png)
+
+    
+    
+Ja kokeilin yhdistää orjakoneeseen t001 komennolla:
+
+    $ ssh -p 8888 vagrant@192.168.12.102
+
+   vagrant@192.168.12.102: Permission denied (publickey).
+
+   
+En onnistunut saamaan julkista avainta toimimaan orja-koneilla. Kokeilin myös yrittää muokata eri asetuksia sshd_config-tiedostossa, tuloksetta.
+  
+
+
+
+ 
+## Lähteet
+
+
+
+Infra as Code course 2023 Kevät, Tero Karvinen (https://terokarvinen.com/2023/palvelinten-hallinta-2023-kevat/)
+
+Pkg-File-Service – Control Daemons with Salt – Change SSH Server Port, Tero Karvinen (3.4.2018)  (https://terokarvinen.com/2018/pkg-file-service-control-daemons-with-salt-change-ssh-server-port/?fromSearch=salt%20ssh)
+
+
+
+#### Tehnyt Roi Partanen 9.4.2023-10.4.2023
+
